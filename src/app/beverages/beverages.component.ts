@@ -3,7 +3,7 @@ import { BeverageService } from './beverage.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'beverages',
+  selector: 'app-beverages',
   templateUrl: './beverages.component.html',
   styleUrls: ['./beverages.component.css']
 })
@@ -12,24 +12,32 @@ export class BeveragesComponent implements OnInit {
 
   beverages: Array<Object> = [];
 
-  constructor(private router: Router, private beverageService: BeverageService) {
+  constructor(
+    private router: Router,
+    private beverageService: BeverageService
+    ) {
   }
 
   async ngOnInit() {
+    this.beverages = [];
     await this.getBeverages();
   }
 
   async getBeverages() {
-    const resp = await this.beverageService.getBeverages();
-    this.beverages = resp;
+    this.beverages = await this.beverageService.getBeverages();
   }
 
   goToCreate() {
     this.router.navigate(['beverage-create']);
   }
 
-  deleteBeverage(id: string) {
-
+  async deleteBeverage(id: string) {
+    const resp = await this.beverageService.deleteBeverage(id);
+    if (resp) {
+      this.beverages = this.beverages.filter((beverage) => {
+        return beverage['id'] !== id;
+      });
+    }
   }
 
 }
